@@ -680,7 +680,7 @@ Entrada de dados e chamada da rotina ajustl para o ajuste do equilíbrio entre e
 
 """
 
-arq = "jma1.txt"
+arq = "lms317.txt"
 
 while arq == "":
     print("\n>>>>>> qual o nome do arquivo de dados ?")
@@ -688,7 +688,7 @@ while arq == "":
 
 ir = 1
 iw = 0
-path_arq = "C://Users//Mauro//OneDrive//Verdim//"
+path_arq = "C:\\Users\\Mauro\\OneDrive\\FCOpy\\"
 arq = path_arq + arq
 with open(arq, 'r') as file:
     lines = file.readlines()
