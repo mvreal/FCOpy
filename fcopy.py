@@ -88,19 +88,24 @@ def newton_raphson(x, alph, astotal, lam, nr, mrx, mry, r, dp):
     iver = 0
     dp, iver = pivo(rt, dp, iver)
 
-    # atualização dos valores de x, alpha e astotal, ou lambda (se verificação)
-    x = x + dp[0]
+    if iver==0:
+        # atualização dos valores de x, alpha e astotal, ou lambda (se verificação)
+        x = x + dp[0]
 
-    alph = alph + dp[1]
+        alph = alph + dp[1]
 
-    if op == 2:
-        lam = lam + dp[2]
+        if op == 2:
+            lam = lam + dp[2]
+        else:
+            as1 = astotal + dp[2]
+            astotal = as1
+
+        if abs(alph) > 2 * pi:
+            alph = math.copysign(math.fmod(abs(alph), 2 * pi), alph)
     else:
-        as1 = astotal + dp[2]
-        astotal = as1
-
-    if abs(alph) > 2 * pi:
-        alph = math.copysign(math.fmod(abs(alph), 2 * pi), alph)
+        # caso de a matriz tangente resultar singular
+        x, alph, astotal = initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal)
+        lam = 1.00
 
     return x, alph, astotal, lam
 
@@ -155,9 +160,10 @@ def initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal):
     
     # estimativa inicial da profundidade da linha neutra x
     
-    uu = 0.50
-    uu = (pi + uu) ** 5
-    uu = uu - int(uu) # gera um número randômico entre 0 e 1
+    #uu = 0.50
+    #uu = (pi + uu) ** 5
+    #uu = uu - int(uu) # gera um número randômico entre 0 e 1
+    uu = np.random.uniform(0.00,1.00)
     x = (lx + ly) * uu
     
 
@@ -568,14 +574,9 @@ def ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, p
     epsi = 0.00
 
 
-    
-  
-    
-
-
     x, alph, astotal = initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal)
     # calcula os esforços resistentes para o terno {x, alpha, As} inicial
-    nr, mrx, mry, r, epss, epsi = esfor(e, fyd, fcd, nv, xp, yp, nb, xb, yb, perc, x, alph, astotal, b, c, epss, epsi, nrc, il, epsc2, epscu, a1, a2)
+    # nr, mrx, mry, r, epss, epsi = esfor(e, fyd, fcd, nv, xp, yp, nb, xb, yb, perc, x, alph, astotal, b, c, epss, epsi, nrc, il, epsc2, epscu, a1, a2)
 
     while tol>=tole and k0<=50:
         #
@@ -587,8 +588,10 @@ def ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, p
         # calcula os esforços resistentes para o terno {x, alpha, As} inicial
         nr, mrx, mry, r, epss, epsi = esfor(e, fyd, fcd, nv, xp, yp, nb, xb, yb, perc, x, alph, astotal, b, c, epss, epsi, nrc, il, epsc2, epscu, a1, a2)
         
+
         # verifica a convergência do equilíbrio
         tol, dp = conver(na,max,may,nr,mrx,mry,lam,dp)
+        #print('nr = {0:12.4f} mrx = {1:12.4f} mry = {2:12.4f} epss = {3:12.4e} epsi = {4:12.4e}'.format(nr,mrx,mry,epss,epsi))
 
         # realiza uma iteração de Newton-Raphson
         x, alph, astotal, lam = newton_raphson(x, alph, astotal, lam, nr, mrx, mry, r, dp)
@@ -666,8 +669,8 @@ def ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, p
     print("".ljust(78, "*") + "\n")
     print("".ljust(78, "*") + "\n")
     print("\n")
-    print("".ljust(25) + "tecle <enter> para continuar\n\n")
-    car = input().strip()
+    #print("".ljust(25) + "tecle <enter> para continuar\n\n")
+    #car = input().strip()
 
     return
 
@@ -680,7 +683,7 @@ Entrada de dados e chamada da rotina ajustl para o ajuste do equilíbrio entre e
 
 """
 
-arq = "lms317.txt"
+arq = ""
 
 while arq == "":
     print("\n>>>>>> qual o nome do arquivo de dados ?")
