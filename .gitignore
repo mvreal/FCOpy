@@ -2,3 +2,4 @@
 *.pdf
 !secao.pdf
 *.vsd
+TCA2024/**/*
