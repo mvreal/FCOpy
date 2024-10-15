@@ -160,10 +160,10 @@ def initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal):
     
     # estimativa inicial da profundidade da linha neutra x
     
-    #uu = 0.50
-    #uu = (pi + uu) ** 5
-    #uu = uu - int(uu) # gera um número randômico entre 0 e 1
-    uu = np.random.uniform(0.00,1.00)
+    uu = 0.50
+    uu = (pi + uu) ** 5
+    uu = uu - int(uu) # gera um número randômico entre 0 e 1
+    #uu = np.random.uniform(0.00,1.00)
     x = (lx + ly) * uu
     
 
@@ -348,7 +348,7 @@ def esfor(e, fyd, fc, nv, xp, yp, nb, xb, yb, perc, x, alfa, astotal,b, c, epss,
     nrz = nrzt
     mrx = mrks * ca - mret * sa
     mry = mrks * sa + mret * ca
-    #print(nrz,mrx,mry,epss, epsi)
+    #print(nrz,mrx,mry, epss, epsi)
 
     return nrz, mrx, mry, r, epss, epsi
 
@@ -595,7 +595,10 @@ def ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, p
 
         # realiza uma iteração de Newton-Raphson
         x, alph, astotal, lam = newton_raphson(x, alph, astotal, lam, nr, mrx, mry, r, dp)
+        print('k = {0:5.0f} x = {1:12.4f} alph = {2:12.4f} astotal = {3:12.4f} '.format(k, x, alph*57.2958, astotal))
 
+        if k0 > 50:
+            break
         """
             if tol <= tole:
                 break
@@ -691,7 +694,7 @@ while arq == "":
 
 ir = 1
 iw = 0
-path_arq = "C:\\Users\\Mauro\\OneDrive\\FCOpy\\"
+path_arq = "C://Users//Mauro//OneDrive//FCOpy//TAC2024//"
 arq = path_arq + arq
 with open(arq, 'r') as file:
     lines = file.readlines()

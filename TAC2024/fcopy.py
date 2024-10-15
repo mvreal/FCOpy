@@ -160,10 +160,10 @@ def initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal):
     
     # estimativa inicial da profundidade da linha neutra x
     
-    #uu = 0.50
-    #uu = (pi + uu) ** 5
-    #uu = uu - int(uu) # gera um número randômico entre 0 e 1
-    uu = np.random.uniform(0.00,1.00)
+    uu = 0.50
+    uu = (pi + uu) ** 5
+    uu = uu - int(uu) # gera um número randômico entre 0 e 1
+    #uu = np.random.uniform(0.00,1.00)
     x = (lx + ly) * uu
     
 
@@ -592,10 +592,13 @@ def ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, p
         # verifica a convergência do equilíbrio
         tol, dp = conver(na,max,may,nr,mrx,mry,lam,dp)
         #print('nr = {0:12.4f} mrx = {1:12.4f} mry = {2:12.4f} epss = {3:12.4e} epsi = {4:12.4e}'.format(nr,mrx,mry,epss,epsi))
-
+        
         # realiza uma iteração de Newton-Raphson
         x, alph, astotal, lam = newton_raphson(x, alph, astotal, lam, nr, mrx, mry, r, dp)
+        print('k = {0:5.0f} x = {1:12.4f} alph = {2:12.4f} astotal = {3:12.4f} '.format(k, x, alph*57.2958, astotal))
 
+        if k0 > 50:
+            break
         """
             if tol <= tole:
                 break
@@ -829,10 +832,24 @@ with open(arq, 'r') as file:
     yb = yb - yg
 
     # desenha a seção de concreto com as barras de aço
+    # Criando a figura e os eixos
+    fig, ax = plt.subplots()
+
+    # Desenhando a seção de concreto
+    largura = np.abs(xmax - xmin)
+    altura = np.abs(ymax - ymin)
+    ax.plot(xp,yp, '-')
+    ax.plot(xb,yb, 'o',  color='black', markersize=5)
+
+
+    # Ajustando a escala dos eixos para manter a proporção 1:2
+    ax.set_aspect(altura / largura)
+
+
+
+    # Exibindo o gráfico
+    plt.show()
     
-    plt.plot(xp,yp, '-')
-    plt.plot(xb,yb, 'o',  color='black', markersize=10)
-    plt.show
     
     ajustl(op, gc, gs, nv, xp, yp, nrc, fcd, il, nb, e , astotal, xb, yb, fyd, perc, na, max, may, epsc2, epscu, a1, a2, const, lx, ly, area, jox, joy, joxy)
     
