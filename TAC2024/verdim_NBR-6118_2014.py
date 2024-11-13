@@ -78,13 +78,13 @@ def initial(jox, joy, joxy, lx, ly, na, max, may, fcd, fyd, astotal):
     
     # estimativa inicial da profundidade da linha neutra x
     
-    uu = 0.50
-    uu = (pi + uu) ** 5
-    uu = uu - int(uu) # gera um número randômico entre 0 e 1
-    #uu = np.random.uniform(0.00,1.00)
+    #uu = 0.50
+    #uu = (pi + uu) ** 5
+    #uu = uu - int(uu) # gera um número randômico entre 0 e 1
+    uu = np.random.uniform(0.00,1.00)
     x = (lx + ly) * uu
-    if np.abs(alfa0)<1e-6:
-        x = 0.50 * ly
+    #if np.abs(alfa0)<1e-6:
+    #    x = 0.50 * ly
     
 
     # estimativa inicial da armadura total astotal
