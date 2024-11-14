@@ -468,7 +468,7 @@ Entrada de dados e chamada da rotina ajustl para o ajuste do equilíbrio entre e
 
 """
 
-arq = "jma1.txt"
+arq = ""
 
 while arq == "":
     print("\n>>>>>> qual o nome do arquivo de dados ?")

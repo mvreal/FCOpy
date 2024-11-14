@@ -396,7 +396,7 @@ def regi(fcd, b, c, ks1, et1, ks2, et2, blx, clx, a1, a2, nrzt, mrks, mret, r):
     e0 = cle * clx
     e1 = ble * clx + cle * blx
     e2 = ble * blx
-    br = 0.85 * fcd
+    br = fcd
     dks = ks2 - ks1
     det = et2 - et1
     det1 = det / 2.0
@@ -433,7 +433,7 @@ def regii(fcd, ks1, et1, ks2, et2, nrzt, mrks, mret):
     g00 = (ks1 + dks / 2.0) * det
     g01 = (ks1 * (et1 + det / 2.0) + dks * (et1 / 2.0 + det / 3.0)) * det
     g10 = (ks1 * (ks1 + dks) + dks * dks / 3.0) * det / 2.0
-    fc = 0.85 * fcd
+    fc = fcd
 
     # cálculo dos esforços resistentes em relação aos eixos ksi e eta
     nrzt = nrzt - fc * g00
@@ -468,7 +468,7 @@ Entrada de dados e chamada da rotina ajustl para o ajuste do equilíbrio entre e
 
 """
 
-arq = "jma1.txt"
+arq = ""
 
 while arq == "":
     print("\n>>>>>> qual o nome do arquivo de dados ?")
@@ -548,7 +548,10 @@ with open(arq, 'r') as file:
             eta_c = 1.00
         else:
             eta_c = (40./fck)**(1./3.)
-        fcd[i] = eta_c * fcd[i]
+        # coeficiente ktc
+        ktc = 0.85
+        # cálculo da resistência à compressão de cálculo do concreto
+        fcd[i] = ktc * eta_c * fcd[i]
     
     # cálculo das propriedades geométricas da seção de concreto usando o Teorema de Green
         
