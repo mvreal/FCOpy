@@ -200,7 +200,7 @@ def esfor(e, fyd, fc, nv, xp, yp, nb, xb, yb, perc, x, alfa, astotal,b, c, epss,
     nrzt = 0.0
     mrks = 0.0
     mret = 0.0
-    r = np.zeros((3,3))
+    
     
     # calculo dos esforços resistentes e da matriz de rigidez para as barras de aço
     for j1 in range(nb):
@@ -214,15 +214,7 @@ def esfor(e, fyd, fc, nv, xp, yp, nb, xb, yb, perc, x, alfa, astotal,b, c, epss,
         nrzt += nrzti
         mrks += nrzti * etb[j1]
         mret -= nrzti * ksb[j1]
-        # matriz de rigidez para a armadura
-        r[0][0] += dum1 * etb[j1]
-        r[0][1] += dum2 * etb[j1]
-        r[1][0] -= dum1 * ksb[j1]
-        r[1][1] -= dum2 * ksb[j1]
-        r[2][0] += dum1
-        r[2][1] += dum2
-
-    
+            
     if abs(epss - epsi) <= 1e-10:
         
         # solução para o caso de compressão ou tração centrada
@@ -231,16 +223,16 @@ def esfor(e, fyd, fc, nv, xp, yp, nb, xb, yb, perc, x, alfa, astotal,b, c, epss,
             nrz = nrzt
             mrx = mrks * ca - mret * sa
             mry = mrks * sa + mret * ca
-            return nrz, mrx, mry, r, epss, epsi
+            return nrz, mrx, mry, epss, epsi
         # compressão centrada 
         for j1 in range(nrc):
             fcd = fc[j1]
             if j1 == 0:
-                np1 = 1
+                np1 = 0
             else:
                 np1 = int(il[j1 - 1])
             np2 = int(il[j1] - 1)
-            nrzt, mrks, mret, r = centra(np1, np2, fcd, b, c, epss, ksp, etp, blx, clx, epsc2[j1], a1[j1], a2[j1], nrzt, mrks, mret, r)
+            nrzt, mrks, mret = centra(np1, np2, fcd, b, c, epss, ksp, etp, blx, clx, epsc2[j1], a1[j1], a2[j1], nrzt, mrks, mret)
         
     else:
     # solução para o caso de flexo compressão
@@ -261,7 +253,7 @@ def esfor(e, fyd, fc, nv, xp, yp, nb, xb, yb, perc, x, alfa, astotal,b, c, epss,
                 if eps0 >= 0 and eps1 >= 0:
                     continue
                 ks1i, et1i, ks2i, et2i, ks1ii, et1ii, ks2ii, et2ii = difer(j2, et01, et12, ksp, etp, eps0, eps1, epsc2[j1])
-                nrzt, mrks, mret, r = regi(fcd, b, c, ks1i, et1i, ks2i, et2i, blx, clx, a1[j1], a2[j1], nrzt, mrks, mret, r)
+                nrzt, mrks, mret = regi(fcd, b, c, ks1i, et1i, ks2i, et2i, blx, clx, a1[j1], a2[j1], nrzt, mrks, mret)
                 nrzt, mrks, mret = regii(fcd, ks1ii, et1ii, ks2ii, et2ii, nrzt, mrks, mret)
 
     nrz = nrzt
@@ -364,13 +356,13 @@ def difer(i, et01, et12, ksp, etp, eps0, eps1, epsc2):
     
 
 
-def centra(np1, np2, fcd, b, c, epss, ksp, etp, blx, clx, epsc2, a1, a2, nrzt, mrks, mret, r):
+def centra(np1, np2, fcd, b, c, epss, ksp, etp, blx, clx, epsc2, a1, a2, nrzt, mrks, mret):
     """
     Solução para compressão centrada
 
     """
     if epss >= 0:
-        return nrzt, mrks, mret, r
+        return nrzt, mrks, mret
     if epss <= -epsc2:
         for j1 in range(np1, np2):
             j2 = j1 + 1
@@ -378,12 +370,12 @@ def centra(np1, np2, fcd, b, c, epss, ksp, etp, blx, clx, epsc2, a1, a2, nrzt, m
     else:
         for j1 in range(np1, np2):
             j2 = j1 + 1
-            regi(fcd, b, c, ksp[j1], etp[j1], ksp[j2], etp[j2], blx, clx, a1, a2, nrzt, mrks, mret, r)
-    return nrzt, mrks, mret, r
+            regi(fcd, b, c, ksp[j1], etp[j1], ksp[j2], etp[j2], blx, clx, a1, a2, nrzt, mrks, mret)
+    return nrzt, mrks, mret
     
        
 
-def regi(fcd, b, c, ks1, et1, ks2, et2, blx, clx, a1, a2, nrzt, mrks, mret, r):
+def regi(fcd, b, c, ks1, et1, ks2, et2, blx, clx, a1, a2, nrzt, mrks, mret):
     """
     Solução para a integração dos esforços na região I
     """
@@ -416,12 +408,8 @@ def regi(fcd, b, c, ks1, et1, ks2, et2, blx, clx, a1, a2, nrzt, mrks, mret, r):
     mrks = mrks + br * (d0 * g01 + d1 * g02 + d2 * g03)
     mret = mret - br * (d0 * g10 + d1 * g11 + d2 * g12)
     
-    # cálculo da matriz de derivadas parciais para a região I
-    r[0, 0] = r[0, 0] + br * (e0 * g01 + e1 * g02 + e2 * g03)
-    r[1, 0] = r[1, 0] - br * (e0 * g10 + e1 * g11 + e2 * g12)
-    r[2, 0] = r[2, 0] + br * (e0 * g00 + e1 * g01 + e2 * g02)
-
-    return nrzt, mrks, mret, r
+    
+    return nrzt, mrks, mret
     
     
 def regii(fcd, ks1, et1, ks2, et2, nrzt, mrks, mret):
@@ -640,7 +628,7 @@ with open(arq, 'r') as file:
     
     # inicialização de variáveis
     nr, mrx, mry, lam, lammin, nrmin, mrxmin, mrymin = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-    r = np.zeros((3,3))
+    
     rt = np.zeros((3,3))
     dp = np.zeros(3)
     
